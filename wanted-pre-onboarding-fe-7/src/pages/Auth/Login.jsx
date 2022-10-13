@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { authApis } from '../../shared/api';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [isValid, setIsValid] = useState(false);
@@ -11,6 +12,8 @@ const Login = () => {
     email: '',
     password: ''
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (passWordIsValid && emailIsValid) {
@@ -23,8 +26,10 @@ const Login = () => {
   const onLogin = async (e) => {
     e.preventDefault();
     try {
-      await authApis.signIn(inputValue);
-      alert('로그인에 성공하였습니다');
+      const res = await authApis.signIn(inputValue);
+
+      localStorage.setItem('token', res.data.access_token); // 로컬스토리지에 token 저장
+      navigate('/todo');
     } catch (err) {
       alert(err.response.message);
     }
