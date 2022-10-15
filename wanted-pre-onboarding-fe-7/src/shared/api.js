@@ -25,5 +25,6 @@ export const authApis = {
 export const toDoApis = {
   getTodos: () => api.get('/todos'),
   createTodo: (todo) => api.post('/todos', todo),
-  updateTodo: (todo, id) => api.put(`/todos/:${id}`, todo)
+  updateTodo: (todo, id) => api.put(`/todos/${id}`, todo),
+  deleteTodo: (id) => api.delete(`/todos/${id}`)
 };
