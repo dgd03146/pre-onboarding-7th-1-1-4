@@ -5,16 +5,28 @@ import Login from './pages/Auth/Login';
 import SignUp from './pages/Auth/SignUp';
 import Todo from './pages/Todo/Todo';
 import GlobalStyle from './styles/global';
+import { Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
+  const token = localStorage.getItem('token');
+
   return (
     <>
       <GlobalStyle />
       <Routes>
         <Route path="/" element={<Container />}>
-          <Route index element={<Login />} />
+          <Route index element={token ? <Navigate to="/todo" /> : <Login />} />
+          <Route
+            path="/todo"
+            element={
+              <PrivateRoute path={'/todo'}>
+                <Todo />
+              </PrivateRoute>
+            }
+          />
           <Route path="/signUp" element={<SignUp />} />
-          <Route path="/todo" element={<Todo />} />
         </Route>
       </Routes>
     </>

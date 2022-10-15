@@ -5,33 +5,12 @@ import { GrCheckboxSelected } from 'react-icons/gr';
 import { toDoApis } from '../../shared/api';
 
 const Todo = () => {
-  const data = [
-    {
-      id: 1,
-      todo: 'todo2',
-      isCompleted: false,
-      userId: 1
-    },
-    {
-      id: 2,
-      todo: 'todo3',
-      isCompleted: false,
-      userId: 1
-    },
-    {
-      id: 3,
-      todo: 'todo4',
-      isCompleted: true,
-      userId: 1
-    }
-  ];
-
-  // const [data, setData] = useState();
+  const [data, setData] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
       const res = await toDoApis.getTodos();
-      console.log(res.data, 'res');
+      setData(...res.data);
     };
 
     fetchData();
@@ -40,7 +19,7 @@ const Todo = () => {
   return (
     <Container>
       <h1>ToDo List</h1>
-      {data.map((it) => {
+      {data?.map((it) => {
         return (
           <ToDoItem key={it.id}>
             <p>{it.todo}</p>
@@ -70,7 +49,7 @@ const InputBox = styled.div`
   margin: 1rem 0;
   display: flex;
   input {
-    padding: 0.5rem 0;
+    padding: 0.5rem 1rem;
   }
 
   button {

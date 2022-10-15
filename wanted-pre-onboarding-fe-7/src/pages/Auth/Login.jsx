@@ -28,7 +28,8 @@ const Login = () => {
     try {
       const res = await authApis.signIn(inputValue);
 
-      localStorage.setItem('token', res.data.access_token); // 로컬스토리지에 token 저장
+      localStorage.setItem('token', res.data.access_token); // 로그인 성공 후 로컬스토리지에 token 저장
+
       navigate('/todo');
     } catch (err) {
       alert(err.response.message);
