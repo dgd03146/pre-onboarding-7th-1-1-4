@@ -1,48 +1,48 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { GrCheckbox } from 'react-icons/gr';
-import { GrCheckboxSelected } from 'react-icons/gr';
+
 import { toDoApis } from '../../shared/api';
+import { useNavigate } from 'react-router-dom';
 
 const Todo = () => {
   const [data, setData] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [todoId, setTodoId] = useState();
-  const [updatedTodo, setUpdatedTodo] = useState();
+  const [check, setCheck] = useState();
+
+  const navigate = useNavigate();
 
   const todoRef = useRef();
   const inputRef = useRef();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await toDoApis.getTodos();
-        setData([...res.data]);
-      } catch (err) {
-        alert(err.response.message);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const res = await toDoApis.getTodos();
+      setData([...res.data]);
+    } catch (err) {
+      alert(err.response.message);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
   const onEdit = (id) => {
     const target = data.find((el) => el.id === id);
-
     setTodoId(target.id);
+    setCheck(target.isCompleted);
     setIsEdit(true);
   };
 
   const onCreate = async () => {
     const newTodo = {
-      id: data.length,
       todo: inputRef.current.value,
-      isCompleted: false,
-      userId: data[0].userId
+      isCompleted: false
     };
     try {
-      await toDoApis.createTodo(newTodo);
-      setData([...data, newTodo]);
+      const res = await toDoApis.createTodo(newTodo);
+      setData([...data, res.data]);
       inputRef.current.value = '';
     } catch (err) {
       alert(err.response.message);
@@ -53,7 +53,9 @@ const Todo = () => {
     const todo = todoRef.current.value;
     let newTodo;
     const newData = data.map((el) => {
-      return el.id === id ? (newTodo = { ...el, todo }) : el;
+      return el.id === id
+        ? (newTodo = { ...el, todo, isCompleted: check })
+        : el;
     });
 
     try {
@@ -80,7 +82,17 @@ const Todo = () => {
 
   return (
     <Container>
-      <h1>ToDo List</h1>
+      <div className="infoContainer">
+        <h1>ToDo List</h1>
+        <button
+          onClick={() => {
+            localStorage.removeItem('token');
+            navigate('/');
+          }}
+        >
+          로그아웃
+        </button>
+      </div>
       <InputBox>
         <input type="text" ref={inputRef} />
         <button onClick={onCreate}>추가</button>
@@ -88,17 +100,23 @@ const Todo = () => {
       {data?.map((it) => {
         return (
           <ToDoItem key={it.id}>
-            {it.isCompleted ? <GrCheckboxSelected /> : <GrCheckbox />}
+            {isEdit && todoId === it.id && (
+              <input
+                type="checkbox"
+                checked={check}
+                onChange={() => setCheck((prev) => !prev)}
+              />
+            )}
             <div className="edit-box">
               {isEdit && todoId === it.id ? (
                 <input defaultValue={it.todo} ref={todoRef} />
               ) : (
-                <p>{it.todo}</p>
+                <TodoText isCompleted={it.isCompleted}>{it.todo}</TodoText>
               )}
             </div>
             <ButtonContainer>
               {isEdit && todoId === it.id ? (
-                <button className="edit-btn" onClick={() => onUpdate(it.id)}>
+                <button className="submit-btn" onClick={() => onUpdate(it.id)}>
                   제출
                 </button>
               ) : (
@@ -130,8 +148,22 @@ const Todo = () => {
 
 const Container = styled.ul`
   padding: 1rem 3rem;
+  min-width: 500px;
   font-size: 1.5rem;
   background-color: #ececec;
+  .infoContainer {
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    button {
+      font-size: 1.2rem;
+      background-color: gray;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 8px;
+    }
+  }
 `;
 const ToDoItem = styled.li`
   display: flex;
@@ -140,18 +172,34 @@ const ToDoItem = styled.li`
   margin: 0.5rem 0;
   padding: 0.1rem 0;
 
+  input[type='checkbox'] {
+    background-color: #fff;
+
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+  }
   .edit-box {
     display: flex;
     align-items: center;
     margin: 0 1rem;
     text-align: left;
     min-width: 300px;
-    p {
-    }
+
     input {
       font-size: 1.4rem;
     }
   }
+`;
+
+const TodoText = styled.p`
+  width: 100%;
+  text-decoration: ${(props) => (props.isCompleted ? 'line-through' : 'none')};
 `;
 
 const InputBox = styled.div`
@@ -177,6 +225,10 @@ const ButtonContainer = styled.div`
   }
   .edit-btn {
     background-color: lightgray;
+    margin-right: 0.3rem;
+  }
+  .submit-btn {
+    background-color: yellowgreen;
     margin-right: 0.3rem;
   }
   .delete-btn {
