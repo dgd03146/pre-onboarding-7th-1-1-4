@@ -1,6 +1,8 @@
+# 코드는 wanted-pre-onboarding-fe-7에 작성되어있습니다.
+
 ## 원티드 프리온보딩 프론트엔드 코스 사전과제
 과제 내용 : https://github.com/walking-sunset/selection-task  
-코드는 wanted-pre-onboarding-fe-7에 작성되어있습니다!
+
 
 ## 실행방법
 yarn install
