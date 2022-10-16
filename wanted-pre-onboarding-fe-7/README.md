@@ -1,5 +1,5 @@
 ## 원티드 프리온보딩 프론트엔드 코스 사전과제
-깃헙링크 : https://github.com/dgd03146/wanted-pre-onboarding-frontend/tree/main/wanted-pre-onboarding-fe-7
+과제 내용 : https://github.com/walking-sunset/selection-task
 
 ## 실행방법
 yarn install
